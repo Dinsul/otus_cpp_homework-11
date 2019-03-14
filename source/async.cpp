@@ -4,24 +4,34 @@
 #include <vector>
 #include <iostream>
 #include <boost/asio.hpp>
+#include <algorithm>
 
 
 std::vector<std::string> split(const std::string &str, char separator)
 {
     std::vector<std::string> retValue;
 
-    std::string::size_type start = 0;
-    std::string::size_type stop  = str.find_first_of(separator);
+    auto start = str.begin();
+    decltype (str.begin()) stop;
 
-    while(stop != std::string::npos)
+    do
     {
-        retValue.push_back(str.substr(start, stop - start));
+        while (*start == separator) {
+            ++start;
+        }
 
-        start = stop + 1;
-        stop  = str.find_first_of(separator, start);
+        stop = std::find(start, str.end(), separator);
+
+        auto subString = std::string(start, stop);
+
+        if (!subString.empty())
+        {
+            retValue.push_back(subString);
+        }
+
+        start = stop;
     }
-
-    retValue.push_back(str.substr(start));
+    while(stop != str.end());
 
     return retValue;
 }
