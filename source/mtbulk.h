@@ -62,7 +62,7 @@ private:
 
 public:
     MTWorker();
-    ~MTWorker();
+    ~MTWorker() override;
 
     void operator ()(const Bulk &bulk) override;
 
