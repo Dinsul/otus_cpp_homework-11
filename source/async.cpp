@@ -42,16 +42,10 @@ void receive(handle_t handle, const char *data, std::size_t size)
 {
     auto context  = static_cast<async::handle *>(handle);
 
-//    while (!context->service.stopped()) {
-//        std::this_thread::sleep_for(std::chrono::milliseconds(50));
-//    }
-
     context->service.reset();
 
     context->service.post([&](){
         auto commands = split(std::string(data, size), '\n');
-
-        std::this_thread::sleep_for(std::chrono::milliseconds(500));
 
         for(const auto &cmd : commands)
         {
