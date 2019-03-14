@@ -1,0 +1,18 @@
+language: cpp
+compiler: clang
+dist: xenial
+before_script:
+#- sudo apt update
+#- sudo apt install libboost-test-dev -y
+- wget https://dl.bintray.com/conan/installers/conan-ubuntu-64_1_10_0.deb
+- sudo dpkg -i conan-ubuntu-64_1_10_0.deb
+script:
+- cmake . -DCMAKE_BUILD_TYPE=Release
+- cmake --build .
+- cmake --build . --target test
+- cmake --build . --target package
+deploy:
+  provider: script
+  skip_cleanup: true
+  script:
+  - curl -T async-0.0.$TRAVIS_BUILD_NUMBER-Linux.deb -udinsul:$BINTRAY_API_KEY "https://api.bintray.com/content/alpha/homeworks/package/$TRAVIS_BUILD_NUMBER/async-0.0.$TRAVIS_BUILD_NUMBER-Linux.deb;deb_distribution=trusty;deb_component=main;deb_architecture=amd64;publish=1"
