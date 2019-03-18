@@ -3,37 +3,36 @@
 
 #include <vector>
 #include <iostream>
+#include <boost/bind.hpp>
 #include <boost/asio.hpp>
 #include <algorithm>
 
 
-std::vector<std::string> split(const std::string &str, char separator)
+void split(BulkController &ctrl, std::string &str, char separator)
 {
-    std::vector<std::string> retValue;
-
     auto start = str.begin();
-    decltype (str.begin()) stop;
+    auto stop  = str.begin();
 
     do
     {
-        while (*start == separator) {
-            ++start;
+        if (*stop == separator){
+            start = ++stop;
+        }
+        else {
+            start = stop;
         }
 
         stop = std::find(start, str.end(), separator);
 
-        auto subString = std::string(start, stop);
-
-        if (!subString.empty())
+        if (stop != str.end())
         {
-            retValue.push_back(subString);
+            ctrl.addString(std::string(start, stop));
         }
 
-        start = stop;
     }
     while(stop != str.end());
 
-    return retValue;
+    str = std::string(start, str.end());
 }
 
 
@@ -45,24 +44,23 @@ struct handle
     MTWorker wrk;
     BulkController ctrl;
 
-    handle(std::size_t commandsCount) : service(), wrk(), ctrl(commandsCount, wrk){}
+    std::string buffer;
+
+    handle(std::size_t commandsCount) : service(), wrk(), ctrl(commandsCount, wrk), buffer(){}
 };
 
 void receive(handle_t handle, const char *data, std::size_t size)
 {
     auto context  = static_cast<async::handle *>(handle);
 
+    context->buffer.append(std::string(data, size));
+
     context->service.reset();
+    context->service.post(boost::bind(&split, std::ref(context->ctrl), std::ref(context->buffer), '\n'));
 
-    context->service.post([&](){
-        auto commands = split(std::string(data, size), '\n');
-
-        for(const auto &cmd : commands)
-        {
-            context->ctrl.addString(cmd);
-        }
-    });
-
+    if (!size && !context->buffer.empty()){
+        context->ctrl.addString(context->buffer);
+    }
     context->service.run();
 }
 
@@ -70,13 +68,13 @@ handle_t connect(std::size_t bulk)
 {
     auto retVal = new handle(bulk);
 
-
     return static_cast<handle_t>(retVal);
 }
 
 void disconnect(handle_t handle)
 {
     auto context  = static_cast<async::handle *>(handle);
+    receive(handle, "", 0);
 
     delete context;
 }

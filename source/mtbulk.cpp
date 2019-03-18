@@ -68,8 +68,8 @@ BulkController::~BulkController()
 
     std::cout << "MainThread\n"
               << "\tCommands: " << _commandsCounter << "\n"
-              << "\tLines:    " << _linesCounter << "\n"
-              << "\tBulks:    " << _bulksCounter << std::endl;
+              << "\tLines:    " << _linesCounter    << "\n"
+              << "\tBulks:    " << _bulksCounter    << std::endl;
 }
 
 void BulkController::addString(const std::string &str)
