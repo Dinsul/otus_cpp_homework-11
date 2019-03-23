@@ -13,6 +13,7 @@ BOOST_AUTO_TEST_CASE(test_1)
     auto h2 = async::connect(bulk);
     async::receive(h, "1", 1);
     async::receive(h, "1", 1);
+    async::receive(h, "\n", 1);
     async::receive(h, "1", 1);
     async::receive(h2, "2\n", 2);
     async::receive(h, "\n2\n3\n4\n5\n6\n{\na\n", 15);

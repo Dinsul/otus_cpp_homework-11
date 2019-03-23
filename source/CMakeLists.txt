@@ -1,6 +1,6 @@
 add_library(${PROJECT_NAME} SHARED
-    "mtbulk.cpp"
-    "mtbulk.h"
+    "bulkmt.cpp"
+    "bulkmt.h"
     "${PROJECT_NAME}.cpp"
     "${PROJECT_NAME}.h"
     )

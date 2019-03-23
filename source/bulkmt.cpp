@@ -1,4 +1,4 @@
-#include "mtbulk.h"
+#include "bulkmt.h"
 
 #include <iostream>
 #include <fstream>
@@ -68,8 +68,8 @@ BulkController::~BulkController()
 
     std::cout << "MainThread\n"
               << "\tCommands: " << _commandsCounter << "\n"
-              << "\tLines:    " << _linesCounter    << "\n"
-              << "\tBulks:    " << _bulksCounter    << std::endl;
+              << "\tLines:    " << _linesCounter << "\n"
+              << "\tBulks:    " << _bulksCounter << std::endl;
 }
 
 void BulkController::addString(const std::string &str)
@@ -180,12 +180,12 @@ void MTWorker::logHelper(size_t &commandsCounter, size_t &bulkCounter)
             fileName = buffer;
         }while (fexists(fileName));
 
-        lk.unlock();
-
-
         std::ofstream logFile;
 
         logFile.open(fileName, std::ios_base::app);
+
+        lk.unlock();
+
 
         logFile << "bulk: ";
 
