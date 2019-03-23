@@ -45,6 +45,7 @@ struct Worker : public ImpWorker
 struct MTWorker : public ImpWorker
 {
 private:
+    size_t _id;
     bool isRun;
     size_t _printCommandsCounter;
     size_t _printBulkCounter;
@@ -60,6 +61,8 @@ private:
 
     void printHelper(size_t &commandsCounter, size_t &bulkCounter);
     void logHelper(size_t &commandsCounter, size_t &bulkCounter);
+
+    static size_t get_id();
 
 public:
     MTWorker();

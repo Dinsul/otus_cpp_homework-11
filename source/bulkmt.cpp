@@ -176,7 +176,7 @@ void MTWorker::logHelper(size_t &commandsCounter, size_t &bulkCounter)
         std::string fileName;
 
         do{
-            sprintf(buffer, "bulk_%li_%.4d.log", bulk.beginTime(), ++counter);
+            sprintf(buffer, "bulk_%.2ld_%li_%.4d.log", _id, bulk.beginTime(), ++counter);
             fileName = buffer;
         }while (fexists(fileName));
 
@@ -209,7 +209,14 @@ void MTWorker::logHelper(size_t &commandsCounter, size_t &bulkCounter)
     }
 }
 
+size_t MTWorker::get_id()
+{
+    static size_t counter;
+    return  ++counter;
+}
+
 MTWorker::MTWorker() :
+    _id(MTWorker::get_id()),
     isRun(true),
     _printCommandsCounter(0),
     _printBulkCounter(0),
@@ -217,7 +224,7 @@ MTWorker::MTWorker() :
     _logBulksCouter({0})
 {
 
-    for (int i = 0; i < LOG_THREADS_NUM; ++i)
+    for (size_t i = 0; i < LOG_THREADS_NUM; ++i)
     {
         std::thread(&MTWorker::logHelper, this, std::ref(_logCommandsCouter[i]), std::ref(_logBulksCouter[i])).detach();
     }
@@ -235,7 +242,7 @@ MTWorker::~MTWorker()
               << "\tCommands: " << _printCommandsCounter << "\n"
               << "\tBulks:    " << _printBulkCounter << std::endl;
 
-    for (int i = 0; i < LOG_THREADS_NUM; ++i)
+    for (size_t i = 0; i < LOG_THREADS_NUM; ++i)
     {
         std::cout << "LogThread #" << i + 1 << "\n"
                   << "\tCommands: " << _logCommandsCouter[i] << "\n"
